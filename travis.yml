@@ -1,0 +1,19 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t pyromaticx/react-test -f ./client/Dockerfile.dev ./client
+scripts:
+  - docker run pyromaticx/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t pyromaticx/multi-client ./client
+  - docker build -t pyromaticx/multi-nginx ./nginx
+  - docker build -t pyromaticx/multi-server ./server
+  - docker build -t pyromaticx/multi-worker ./worker
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push pyromaticx/multi-client
+  - docker push pyromaticx/multi-nginx
+  - docker push pyromaticx/multi-server
+  - docker push pyromaticx/multi-worker
