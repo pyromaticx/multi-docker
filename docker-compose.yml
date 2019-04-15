@@ -2,6 +2,20 @@ version: '3'
 services: 
   postgres: 
     image: 'postgres:latest'
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
   redis:
     image: 'redis:latest'
   nginx:
@@ -26,6 +40,9 @@ services:
       - PGDATABASE=postgres
       - PGPASSWORD=postgres_password
       - PGPORT=5432
+      - MongoDB=mongo
+      - MongoUser=root
+      - MongoPass=example
   client:
     build:
       dockerfile: Dockerfile.dev
