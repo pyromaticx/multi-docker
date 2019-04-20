@@ -5,9 +5,10 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const User = require('./schema/user');
 const cors = require('cors');
 
-mongoose.connect('mongodb://mongodb:27018');
+mongoose.connect(`mongodb://${process.env.MONGOUSER}:${process.env.MONGOPASS}@${process.env.MONGODBADDR}:27017`);
 
 const app = express();
 app.use(cors());
@@ -55,7 +56,34 @@ app.post('/login', (req, res) => {
   console.log(req.body);
 });
 
-
+app.post('/register', (req, res) => {
+  User.findOne({username: req.body.username}, (err, user) => {
+    if(user) {
+      res.send(JSON.stringify({errors: ["username"]}));
+      return;
+    } else {
+      if(req.body.password !== req.body.password2) {
+        res.send(JSON.stringify({errors: ["password", "password2"]}));
+        return;
+      }
+      if(!req.body.email) {
+        res.send(JSON.stringify({errors: ["email"]}));
+        return;
+      }
+      let usr = new User();
+      usr.username = req.body.username;
+      usr.password = req.body.password;
+      usr.email = req.body.email;
+      usr.registered = Date.now();
+      usr.save((err, result) => {
+        if(err) {
+          console.log(err);
+        }
+        res.send(JSON.stringify({status: 200, message: "user created"}));
+      });
+    }
+  })
+});
 
 app.listen(5000, err => {
   console.log('Listening');

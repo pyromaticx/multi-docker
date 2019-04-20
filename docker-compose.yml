@@ -30,8 +30,8 @@ services:
       dockerfile: Dockerfile.dev
       context: ./server
     volumes:
-      - /app/node_modules
       - ./server:/app
+      - /app/node_modules
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -40,16 +40,16 @@ services:
       - PGDATABASE=postgres
       - PGPASSWORD=postgres_password
       - PGPORT=5432
-      - MongoDB=mongo
-      - MongoUser=root
-      - MongoPass=example
+      - MONGODBADDR=mongo
+      - MONGOUSER=root
+      - MONGOPASS=example
   client:
     build:
       dockerfile: Dockerfile.dev
       context: ./client
     volumes: 
-      - /app/node_modules
       - ./client:/app
+      - /app/node_modules
   worker: 
     build:
       dockerfile: Dockerfile.dev

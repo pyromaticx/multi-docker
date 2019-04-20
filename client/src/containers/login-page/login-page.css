@@ -1,0 +1,14 @@
+.login-box {
+    max-width: 400px;
+    padding: 10px;
+    margin: 0 auto;
+    position: relative;
+    top: 50px;
+}
+.login-box form {
+    display: flex;
+    flex-direction: column;
+}
+.login-box button {
+    margin-top: 5px;
+}
