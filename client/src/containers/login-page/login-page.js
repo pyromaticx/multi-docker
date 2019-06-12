@@ -19,7 +19,7 @@ export default class LoginPage extends Component {
         evt.preventDefault();
         console.log(this.state);
 
-        fetch('/api/login', {
+        fetch('/api/auth/login', {
             method: "POST",
             mode: "cors", 
             cache: "no-cache",
@@ -30,7 +30,10 @@ export default class LoginPage extends Component {
             referrer: "no-referrer", 
             body: JSON.stringify({username: this.state.username, password: this.state.password}), 
         }).then(_res => {return _res.json()}).then(res => {
-            console.log(res);
+            if(res.token) {
+                window.localStorage.setItem('@Lustyr:jwt', res.token);
+                this.props.history.push('/home');
+            }
         })
     }
     doRegister() {
@@ -45,8 +48,8 @@ export default class LoginPage extends Component {
                         <input type="text" name="username" defaultValue={this.state.username} required/>
                         <label htmlFor="password">Password</label>
                         <input type="password" name="password" defaultValue={this.state.password} required/>
-                        <button type="submit">Login</button>
-                        <button type="button" onClick={() => {this.doRegister()}}>Register</button>
+                        <button  variant="contained" color="primary" type="submit">Login</button>
+                        <button  variant="contained" color="secondary" type="button" onClick={() => {this.doRegister()}}>Register</button>
                     </form>
                 </div>
             </div>

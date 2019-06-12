@@ -12,6 +12,47 @@
 body {
   margin: 0;
   padding: 0;
+  background: radial-gradient(ellipse at center, #4f3b5b 0%,#231733 100%);
+}
+label {
+  color: #fef;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  border: 1px solid #000;
+  -webkit-text-fill-color: #fef;
+  -webkit-box-shadow: 0 0 0px 1000px #666 inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+form {
+  background-color: #222;
+  padding: 15px;
+  border-radius: 5;
+  border: 1px solid #000;
+}
+form .header {
+  min-height: 40px;
+  width: 100%;
+}
+input[type=text], input[type=password], input[type=email], select, button {
+  height: 40px;
+  outline: none;
+  border-radius: 5px;
+  background-color: #777;
+  font-size: 30px;
+  border: 1px solid #333;
+  color: #fef;
+}
+button {
+  color: #fef;
+  font-size: 25px;
 }
 .input-row {
   display: flex;
@@ -26,3 +67,16 @@ body {
 .input-row.error label {
   color: red;
 } 
+.row {
+  display: flex;
+  flex-direction: row;
+}
+.column {
+  display: flex;
+  flex-direction: column;
+}
+.third {
+  display: flex;
+  padding: 5px;
+  width: 33.3%;
+}

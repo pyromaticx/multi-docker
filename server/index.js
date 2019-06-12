@@ -6,14 +6,29 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const User = require('./schema/user');
+const passport = require('passport');
+require('./passport');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const geoip = require('geoip-lite');
+var cookieParser = require('cookie-parser');
 
 mongoose.connect(`mongodb://${process.env.MONGOUSER}:${process.env.MONGOPASS}@${process.env.MONGODBADDR}:27017`);
 
 const app = express();
 app.use(cors());
+app.use(cookieParser("we HavE special kookiez!!!123"));
 app.use(bodyParser.json());
-app.use(session({ secret: 'CHANGE THIS 12332', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
+/*app.use((req, res, next) => {
+  console.log("COOKIES::", req.cookies);
+  next();
+});*/
+//app.use(session({ secret: 'CHANGE THIS 12332', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
+
+//ROUTES
+const auth = require('./routes/auth');
+const profile = require('./routes/profile');
+
 // Postgres Client Setup
 const { Pool } = require('pg');
 const pgClient = new Pool({
@@ -50,13 +65,13 @@ const redisClient = redis.createClient({
 });
 const redisPublisher = redisClient.duplicate();
 
-// Express route handlers
 
-app.post('/login', (req, res) => {
-  console.log(req.body);
-});
+// Express route handlers
+app.use('/auth', auth);
+app.use('/profile', passport.authenticate('jwt', {session: false}), profile);
 
 app.post('/register', (req, res) => {
+  let clientSideIp = req.body.regIp;
   User.findOne({username: req.body.username}, (err, user) => {
     if(user) {
       res.send(JSON.stringify({errors: ["username"]}));
@@ -75,6 +90,51 @@ app.post('/register', (req, res) => {
       usr.password = req.body.password;
       usr.email = req.body.email;
       usr.registered = Date.now();
+      usr.emailVerficationDate = null;
+      usr.registered = Date.now();
+      usr.lastLogin = null;
+      //usr.dob: {type: Date},
+      //usr.gender: {type: String},
+      usr.lookingFor = {
+          men: false,
+          women: false,
+          transWomen: false,
+          transMen: false,
+          couple: false
+      };
+      usr.profile = {
+          tagline: "",
+          intro: "",
+          followers: [],
+          following: [],
+          profileQuestions: [],
+          langsSpoken: []
+      };
+      usr.location = {
+          city: "",
+          state: "",
+          country: "",
+          zipCode: "",
+          lat: "",
+          lon: "",
+      };
+      usr.wallet = {
+          membershipLevel: 100,
+          credits: 0,
+          elite: false,
+          gifts: [],
+          referrals: [],
+          transactions: []
+      };
+      usr.billing = {
+          orders: [],
+          savedPayments: [],
+          paymentMethods: ["creditcard"],
+          declines: 0,
+          affilliateId: 'internal',
+          coupons: []
+      };
+
       usr.save((err, result) => {
         if(err) {
           console.log(err);
@@ -84,7 +144,17 @@ app.post('/register', (req, res) => {
     }
   })
 });
-
+app.get('/iplocation/:ip', (req, res) => {
+  let ip = req.params.ip;
+  ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/g;
+  if(ip.match(ipRegex) !== null) {
+    res.status(200).json(geoip.lookup(ip));
+  } else {
+    res.status(400).json({
+      error: 'invalid ip'
+    });
+  }
+});
 app.listen(5000, err => {
   console.log('Listening');
 });

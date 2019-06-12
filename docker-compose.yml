@@ -1,5 +1,5 @@
 version: '3'
-services: 
+services:
   postgres: 
     image: 'postgres:latest'
   mongo:
@@ -43,6 +43,7 @@ services:
       - MONGODBADDR=mongo
       - MONGOUSER=root
       - MONGOPASS=example
+      - JWTSECRET=kjhsdswertfdgcxfvbdtgxsdrgs
   client:
     build:
       dockerfile: Dockerfile.dev
@@ -57,6 +58,8 @@ services:
     volumes:
       - /app/node_modules
       - ./worker:/app
+    ports: 
+      - '9001:9001'
     environment:
     - REDIS_HOST=redis
     - REDIS_PORT=6379
