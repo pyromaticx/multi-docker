@@ -7,7 +7,7 @@
     "axios": "0.18.0",
     "material-ui": "^0.20.2",
     "material-ui-superselectfield": "^1.10.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.1",
     "react-redux": "^7.0.2",
